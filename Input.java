@@ -45,6 +45,10 @@ public class Input implements KeyListener {
         else if (aGamePanel.getGameState() == aGamePanel.getCharacterState()) {
             characterState(vKeyCode);
         }
+        // Option state
+         else if (aGamePanel.getGameState() == aGamePanel.getOptionState()) {
+            optionState(vKeyCode);
+        }
     }
 
     @Override
@@ -127,6 +131,9 @@ public class Input implements KeyListener {
         if (pCode == KeyEvent.VK_F) {
             aShot = true;
         }
+        if(pCode == KeyEvent.VK_ESCAPE) {
+            aGamePanel.setGameState(aGamePanel.getOptionState());
+        }
     }
 
     private void pauseState(int pCode) {
@@ -177,6 +184,61 @@ public class Input implements KeyListener {
         // select
         if (pCode == KeyEvent.VK_ENTER) {
             aGamePanel.getPlayer().selectItem();
+        }
+    }
+
+    private void optionState(int pCode) {
+        if (pCode == KeyEvent.VK_ESCAPE) {
+            aGamePanel.setGameState(aGamePanel.getPlayState());
+        }
+        if (pCode == KeyEvent.VK_ENTER){
+            aEnter = true;
+        }
+
+        // Navigate into option screen
+        int vMaxCommandNum = 0;
+        switch (aGamePanel.getUserInterface().getSubState()) {
+            case 0:
+                vMaxCommandNum = 4;
+            break;
+            case 2:
+                vMaxCommandNum = 1;
+            break;
+        }    
+        if (pCode == KeyEvent.VK_UP) {
+            aGamePanel.getUserInterface().setCommandNumber(aGamePanel.getUserInterface().getCommandNumber() - 1);
+            if (aGamePanel.getUserInterface().getCommandNumber() < 0) {
+                aGamePanel.getUserInterface().setCommandNumber(vMaxCommandNum);
+            }
+        }
+        if (pCode == KeyEvent.VK_DOWN) {
+            aGamePanel.getUserInterface().setCommandNumber(aGamePanel.getUserInterface().getCommandNumber() + 1);
+            if (aGamePanel.getUserInterface().getCommandNumber() > vMaxCommandNum) {
+                aGamePanel.getUserInterface().setCommandNumber(0);
+            }
+        }
+
+        //Change volume
+        if (pCode == KeyEvent.VK_LEFT) {
+            if (aGamePanel.getUserInterface().getSubState() == 0) {
+                if(aGamePanel.getUserInterface().getCommandNumber() == 0 && aGamePanel.getMusic().getVolume() > 0){
+                    aGamePanel.getMusic().setVolume(aGamePanel.getMusic().getVolume() - 1);
+                    aGamePanel.getMusic().checkVolume();
+                }
+                if(aGamePanel.getUserInterface().getCommandNumber() == 1 && aGamePanel.getSoundEffect().getVolume() > 0){
+                    aGamePanel.getSoundEffect().setVolume(aGamePanel.getSoundEffect().getVolume() - 1);
+                }
+            }
+        } else if (pCode == KeyEvent.VK_RIGHT) {
+            if (aGamePanel.getUserInterface().getSubState() == 0) {
+                if(aGamePanel.getUserInterface().getCommandNumber() == 0 && aGamePanel.getMusic().getVolume() < 5){
+                    aGamePanel.getMusic().setVolume(aGamePanel.getMusic().getVolume() + 1);
+                    aGamePanel.getMusic().checkVolume();
+                }
+                if(aGamePanel.getUserInterface().getCommandNumber() == 1 && aGamePanel.getSoundEffect().getVolume() < 5){
+                    aGamePanel.getSoundEffect().setVolume(aGamePanel.getSoundEffect().getVolume() + 1);
+                }
+            }
         }
     }
 

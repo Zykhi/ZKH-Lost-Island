@@ -10,6 +10,8 @@ public class Main {
         GamePanel aGamePanel = new GamePanel();
         aWindow.add(aGamePanel);
 
+        aGamePanel.getConfig().loadConfig();
+
         aWindow.pack();
         aWindow.setVisible(true);
     }

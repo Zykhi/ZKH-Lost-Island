@@ -26,6 +26,8 @@ public class UserInterface {
     private int aSlotRow = 0;
     private int aSlotCol = 0;
 
+    private int aSubState = 0;
+
     private String aCurrentDialogue = "";
 
     public UserInterface(GamePanel pGamePanel) {
@@ -85,6 +87,12 @@ public class UserInterface {
             drawAmmo();
             drawCharacterScreen();
             drawInventory();
+        }
+        // Option State
+        if (aGamePanel.getGameState() == aGamePanel.getOptionState()) {
+            drawPlayerLife();
+            drawAmmo();
+            drawOptionScreen();
         }
 
     }
@@ -168,7 +176,7 @@ public class UserInterface {
         }
     }
 
-    private void drawAmmo(){
+    private void drawAmmo() {
         int vX = aGamePanel.getTileSize() / 2;
         int vY = aGamePanel.getTileSize() / 2;
         int vI = 0;
@@ -182,7 +190,7 @@ public class UserInterface {
             while (vI < aGamePanel.getPlayer().getMaxAmmo()) {
                 aGraphics2D.drawImage(aAmmoBlank, vX, vY, null);
                 vI++;
-                vX += aGamePanel.getTileSize()-16;
+                vX += aGamePanel.getTileSize() - 16;
             }
 
             // Draw ammo
@@ -193,7 +201,7 @@ public class UserInterface {
             while (vI < aGamePanel.getPlayer().getAmmo()) {
                 aGraphics2D.drawImage(aAmmoFull, vX, vY, null);
                 vI++;
-                vX += aGamePanel.getTileSize()-16;
+                vX += aGamePanel.getTileSize() - 16;
             }
         }
     }
@@ -432,6 +440,203 @@ public class UserInterface {
 
     }
 
+    private void drawOptionScreen() {
+
+        aGraphics2D.setColor(Color.white);
+        aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(32f));
+
+        // subwindow
+        int vFrameX = aGamePanel.getTileSize() * 4;
+        int vFrameY = aGamePanel.getTileSize();
+        int vFrameWidth = aGamePanel.getTileSize() * 8;
+        int vFrameHeight = aGamePanel.getTileSize() * 10;
+        drawSubWindow(vFrameX, vFrameY, vFrameWidth, vFrameHeight);
+
+        switch (aSubState) {
+            case 0:
+                optionScreen(vFrameX, vFrameY);
+                break;
+
+            case 1:
+                optionControlScreen(vFrameX, vFrameY);
+                break;
+
+            case 2:
+                optionEndGameScreen(vFrameX, vFrameY);
+                break;
+        }
+    }
+
+    private void optionScreen(int pFrameX, int pFrameY) {
+        int vTextX;
+        int vTextY;
+
+        // title
+        String vText = "Options";
+        vTextX = getXforCenterText(vText);
+        vTextY = pFrameY + aGamePanel.getTileSize();
+        aGraphics2D.drawString(vText, vTextX, vTextY);
+
+        // Music
+        vTextX = pFrameX + aGamePanel.getTileSize();
+        vTextY += aGamePanel.getTileSize() * 2;
+        aGraphics2D.drawString("Music", vTextX, vTextY);
+        if (aCommandNumber == 0) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+        }
+
+        // SE
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Sound FX", vTextX, vTextY);
+        if (aCommandNumber == 1) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+        }
+
+        // Control
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Control", vTextX, vTextY);
+        if (aCommandNumber == 2) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 1;
+                aCommandNumber = 0;
+            }
+        }
+
+        // End Game
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("End Game", vTextX, vTextY);
+        if (aCommandNumber == 3) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 2;
+                aCommandNumber = 0;
+            }
+        }
+
+        // Back
+        vTextY += aGamePanel.getTileSize() * 2;
+        aGraphics2D.drawString("Back", vTextX, vTextY);
+        if (aCommandNumber == 4) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aGamePanel.setGameState(aGamePanel.getPlayState());
+            }
+        }
+
+        // Music volume
+        vTextX = (int) (pFrameX + aGamePanel.getTileSize() * 4.5);
+        vTextY = pFrameY + aGamePanel.getTileSize() * 2 + 24;
+        aGraphics2D.drawRect(vTextX, vTextY, 120, 24);
+        int vVolumeWidth = 24 * aGamePanel.getMusic().getVolume();
+        aGraphics2D.fillRect(vTextX, vTextY, vVolumeWidth, 24);
+
+        // SE volume
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawRect(vTextX, vTextY, 120, 24);
+        vVolumeWidth = 24 * aGamePanel.getSoundEffect().getVolume();
+        aGraphics2D.fillRect(vTextX, vTextY, vVolumeWidth, 24);
+
+        aGamePanel.getConfig().saveConfig();
+    }
+
+    private void optionControlScreen(int pFrameX, int pFrameY) {
+        int vTextX;
+        int vTextY;
+
+        // title
+        String vText = "Controls";
+        vTextX = getXforCenterText(vText);
+        vTextY = pFrameY + aGamePanel.getTileSize();
+        aGraphics2D.drawString(vText, vTextX, vTextY);
+
+        vTextX = pFrameX + aGamePanel.getTileSize();
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Movement", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Attack", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Interact", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Shoot", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Inventory", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Pause", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("Option", vTextX, vTextY);
+
+        vTextX = pFrameX + aGamePanel.getTileSize() * 6;
+        vTextY = pFrameY + aGamePanel.getTileSize() * 2;
+        aGraphics2D.drawString("ZQSD", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("ENTER", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("ENTER", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("F", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("C", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("P", vTextX, vTextY);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString("ESC", vTextX, vTextY);
+
+        // Back
+        vTextX = pFrameX + aGamePanel.getTileSize();
+        vTextY = aGamePanel.getTileSize() * 10;
+        aGraphics2D.drawString("Back", vTextX, vTextY);
+        if (aCommandNumber == 0) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 0;
+                aCommandNumber = 2;
+            }
+        }
+    }
+
+    private void optionEndGameScreen(int pFrameX, int pFrameY) {
+        int vTextX = pFrameX + aGamePanel.getTileSize();
+        int vTextY = pFrameY + aGamePanel.getTileSize() * 2;
+        aCurrentDialogue = "Are you sure you \nwant to quit the \ngame and back to\n title screen?";
+        for (String vLine : aCurrentDialogue.split("\n")) {
+            aGraphics2D.drawString(vLine, vTextX, vTextY);
+            vTextY += 40;
+        }
+
+        // YES/NO OPTION
+        String vText = "YES";
+        vTextX = getXforCenterText(vText);
+        vTextY += aGamePanel.getTileSize() * 2;
+        aGraphics2D.drawString(vText, vTextX, vTextY);
+        if (aCommandNumber == 0) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 0;
+                aCommandNumber = 0;
+                aGamePanel.setGameState(aGamePanel.getTitleState());
+                aGamePanel.stopMusic();
+            }
+        }
+        vText = "NO";
+        vTextX = getXforCenterText(vText);
+        vTextY += aGamePanel.getTileSize();
+        aGraphics2D.drawString(vText, vTextX, vTextY);
+        if (aCommandNumber == 1) {
+            aGraphics2D.drawString(">", vTextX - 25, vTextY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 0;
+                aCommandNumber = 3;
+            }
+        }
+    }
+
     public void addMessage(String pMessage) {
         aMessage.add(pMessage);
         aMessageCounter.add(0);
@@ -468,6 +673,10 @@ public class UserInterface {
 
     public int getSlotRow() {
         return aSlotRow;
+    }
+
+    public int getSubState() {
+        return aSubState;
     }
 
     public void setCommandNumber(int pCommandNumber) {

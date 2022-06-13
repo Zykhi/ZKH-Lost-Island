@@ -13,7 +13,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final int aTileScale = aTileSize * aScale; // 48x48
     private final int aMaxScreenCols = 16;
     private final int aMaxScreenRows = 12;
-    private final int aScreenWidth = aTileScale * aMaxScreenCols; // 768 pixels
+    private final int aScreenWidth = aTileScale * aMaxScreenCols; // 980 pixels
     private final int aScreenHeight = aTileScale * aMaxScreenRows; // 576 pixels
     private final int aFPS = 60;
     private final int aMaxWorldCol = 50;
@@ -34,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable {
     private Sound aSoundEffect = new Sound();
     private UserInterface aGUI = new UserInterface(this);
     private EventHandler aEventHandler = new EventHandler(this);
+    private Config aConfig = new Config(this);
 
     private Thread aGameThread;
 
@@ -44,6 +45,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final int aPauseState = 2;
     private final int aDialogueState = 3;
     private final int aCharacterState = 4;
+    private final int aOptionState = 5;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(aScreenWidth, aScreenHeight));
@@ -244,6 +246,10 @@ public class GamePanel extends JPanel implements Runnable {
         return aCharacterState;
     }
 
+    public int getOptionState() {
+        return aOptionState;
+    }
+
     public int getTileSize() {
         return aTileScale;
     }
@@ -330,6 +336,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     public Input getInput() {
         return aInput;
+    }
+
+    public Config getConfig() {
+        return aConfig;
     }
 
     public void setGameState(int pGameState) {
