@@ -46,6 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final int aDialogueState = 3;
     private final int aCharacterState = 4;
     private final int aOptionState = 5;
+    private final int aGameOverState = 6;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(aScreenWidth, aScreenHeight));
@@ -58,13 +59,17 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setupGame() {
+        setAsset();
+        // playMusic(0);
+        // stopMusic();
+        aGameState = aTitleState;
+    }
+
+    private void setAsset(){
         aAssetSetter.setItem();
         aAssetSetter.setNPC();
         aAssetSetter.setMonster();
         aAssetSetter.setInteractiveTile();
-        // playMusic(0);
-        // stopMusic();
-        aGameState = aTitleState;
     }
 
     public void start() {
@@ -207,6 +212,15 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void resetGame(){
+        //reset all asset
+        setAsset();
+        //reset player values and stuff
+        //aPlayer.restoreLifeAndAmmo();
+        aPlayer.setDefault();
+        aPlayer.setItems();
+    }
+
     public void playMusic(int pIndex) {
         aMusic.setFile(pIndex);
         aMusic.play();
@@ -248,6 +262,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     public int getOptionState() {
         return aOptionState;
+    }
+
+    public int getGameOverState() {
+        return aGameOverState;
     }
 
     public int getTileSize() {

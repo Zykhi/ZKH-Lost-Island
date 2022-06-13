@@ -103,7 +103,7 @@ _how to install the game_
 - [x] Add destructible tile
 - [x] Add pause menu
 - [x] Add dialogue
-- [ ] Add Game Over state
+- [x] Add Game Over state
 - [ ] Add option state
     - [x] Add save game option
     - [x] Add volume changer option

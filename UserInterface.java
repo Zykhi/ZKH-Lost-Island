@@ -95,6 +95,11 @@ public class UserInterface {
             drawOptionScreen();
         }
 
+        // Game Over State
+        if (aGamePanel.getGameState() == aGamePanel.getGameOverState()) {
+            drawGameOverScreen();
+        }
+
     }
 
     private void drawTitleScreen() {
@@ -506,7 +511,7 @@ public class UserInterface {
 
         // End Game
         vTextY += aGamePanel.getTileSize();
-        aGraphics2D.drawString("End Game", vTextX, vTextY);
+        aGraphics2D.drawString("Quit Game", vTextX, vTextY);
         if (aCommandNumber == 3) {
             aGraphics2D.drawString(">", vTextX - 25, vTextY);
             if (aGamePanel.getInput().isEnter() == true) {
@@ -524,6 +529,7 @@ public class UserInterface {
             if (aGamePanel.getInput().isEnter() == true) {
                 aGamePanel.getInput().setEnter(false);
                 aGamePanel.setGameState(aGamePanel.getPlayState());
+                aCommandNumber = 0;
             }
         }
 
@@ -634,6 +640,47 @@ public class UserInterface {
                 aSubState = 0;
                 aCommandNumber = 3;
             }
+        }
+    }
+
+    private void drawGameOverScreen(){
+        aGraphics2D.setColor(new Color(0, 0, 0, 128));
+        aGraphics2D.fillRect(0, 0, aGamePanel.getWidth(), aGamePanel.getHeight());
+
+        int vX;
+        int vY;
+        String vText;
+        aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(Font.BOLD, 110f));
+
+        //Shadow
+        vText = "Game Over";
+        aGraphics2D.setColor(Color.BLACK);
+        vX = getXforCenterText(vText);
+        vY = aGamePanel.getTileSize() * 4;
+        aGraphics2D.drawString(vText, vX, vY);
+        //GameOver Text
+        aGraphics2D.setColor(Color.WHITE);
+        aGraphics2D.drawString(vText, vX - 4, vY - 4);
+
+        //ReTry
+        aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(50f));
+        vText = "Retry";
+        vX = getXforCenterText(vText);
+        vY += aGamePanel.getTileSize() * 4;
+        aGraphics2D.drawString(vText, vX, vY);
+        if(aCommandNumber == 0){
+            aGraphics2D.drawString(">", vX - 40, vY);
+            
+        }
+
+        //Back to title screen
+        vText = "Quit";
+        vX = getXforCenterText(vText);
+        vY += 55;
+        aGraphics2D.drawString(vText, vX, vY);
+        if(aCommandNumber == 1){
+            aGraphics2D.drawString(">", vX - 40, vY);
+            
         }
     }
 

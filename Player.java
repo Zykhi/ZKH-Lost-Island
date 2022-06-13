@@ -40,16 +40,26 @@ public class Player extends Entity {
         setItems();
     }
 
-    public void setDefault() {
+    public void setDefaultPosition(){
         this.setWorldX(getGamePanel().getTileSize() * 20);
         this.setWorldY(getGamePanel().getTileSize() * 7);
-        this.setSpeed(4);
         this.setDirection("down");
+    }
+
+    public void restoreLifeAndAmmo(){
+        setLife(getMaxLife());
+        setAmmo(getMaxAmmo());
+        setInvincible(false);
+    }
+
+    public void setDefault() {
+        setDefaultPosition();
+        this.setSpeed(4);
         // Player Status
         setLevel(1);
         setMaxLife(6);
-        setLife(getMaxLife());
         setMaxAmmo(10);
+        setLife(getMaxLife());
         setAmmo(getMaxAmmo());
         setStrength(1);
         setDexterity(1);
@@ -61,9 +71,13 @@ public class Player extends Entity {
         setProjectile(new Arrow(getGamePanel()));
         setAttack(getPlayerAttack());
         setDefense(getPlayerDefense());
+        setInvincible(false);
     }
 
     public void setItems() {
+        //reset inventory before starting game
+        aInventory.clear();
+        //add starting items to inventory
         aInventory.add(getCurrentWeapon());
         aInventory.add(getCurrentShield());
     }
@@ -452,6 +466,18 @@ public class Player extends Entity {
             }
         }
 
+        if (getLife() > getMaxLife()) {
+            setLife(getMaxLife());
+        }
+
+        if (getAmmo() > getMaxAmmo()) {
+            setAmmo(getMaxAmmo());
+        }
+
+        if (getLife() <= 0) {
+            getGamePanel().setGameState(getGamePanel().getGameOverState());
+        }
+
     }
 
     public void draw(Graphics2D pGraphics) {
@@ -589,13 +615,6 @@ public class Player extends Entity {
                 null);
 
         pGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-
-        if (getLife() > getMaxLife()) {
-            setLife(getMaxLife());
-        }
-        if (getAmmo() > getMaxAmmo()) {
-            setAmmo(getMaxAmmo());
-        }
     }
 
     public int getScreenX() {
