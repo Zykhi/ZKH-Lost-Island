@@ -105,8 +105,9 @@ _how to install the game_
 - [x] Add dialogue
 - [ ] Add Game Over state
 - [ ] Add option state
-    - [ ] Add save game option
-    - [ ] Add volume changer option
+    - [x] Add save game option
+    - [x] Add volume changer option
+    - [x] Add Control window
     - [ ] Add full screen option
 
 <!-- CONTACT -->
