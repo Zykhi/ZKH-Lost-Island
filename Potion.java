@@ -12,6 +12,7 @@ public class Potion extends Entity {
         setType(getConsumableType());
         setName("Potion");
         setValue(5);
+        setPrice(10);
         setDescription("[" + getName() + "]\nA potion.");
 
         try {

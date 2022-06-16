@@ -35,6 +35,10 @@ public class AssetSetter {
         aGamePanel.setNPC(new NPC(aGamePanel), 0);
         aGamePanel.getNPC(0).setWorldX(aGamePanel.getTileSize() * 10);
         aGamePanel.getNPC(0).setWorldY(aGamePanel.getTileSize() * 10);
+
+        aGamePanel.setNPC(new NPCMerchant(aGamePanel), 1);
+        aGamePanel.getNPC(1).setWorldX(aGamePanel.getTileSize() * 20);
+        aGamePanel.getNPC(1).setWorldY(aGamePanel.getTileSize() * 20);
     }
 
     public void setMonster(){

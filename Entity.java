@@ -1,5 +1,5 @@
 import java.awt.image.BufferedImage;
-
+import java.util.ArrayList;
 import java.awt.Rectangle;
 import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
@@ -135,12 +135,15 @@ public class Entity {
     private Entity aCurrentShield;
     private Projectile aProjectile;
 
+    private ArrayList<Entity> aInventory = new ArrayList<Entity>();
+    private final int aMaxInventorySize = 20;
     // Item Attributes
     private int aValue;
     private int aAttackValue;
     private int aDefenseValue;
     private String aDescription = "[Default Description]";
     private int aUseCost;
+    private int aPrice;
 
     // Type
     private int aType; // 0 = Player, 1 = NPC, 2 = Monster
@@ -705,6 +708,14 @@ public class Entity {
         return aUseCost;
     }
 
+    public int getMaxInventorySize() {
+        return aMaxInventorySize;
+    }
+
+    public int getPrice() {
+        return aPrice;
+    }
+
     public boolean getItemCollision() {
         return aCollision;
     }
@@ -723,6 +734,10 @@ public class Entity {
 
     public boolean isDying() {
         return aDying;
+    }
+
+    public ArrayList<Entity> getInventory() {
+        return aInventory;
     }
 
     public String getName() {
@@ -1407,5 +1422,13 @@ public class Entity {
 
     public void setValue(int pValue) {
         this.aValue = pValue;
+    }
+
+    public void setInventory(ArrayList<Entity> aInventory) {
+        this.aInventory = aInventory;
+    }
+
+    public void setPrice(int pPrice) {
+        this.aPrice = pPrice;
     }
 }

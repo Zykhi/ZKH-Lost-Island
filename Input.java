@@ -53,6 +53,10 @@ public class Input implements KeyListener {
         else if (aGamePanel.getGameState() == aGamePanel.getGameOverState()) {
             gameOverState(vKeyCode);
         }
+        // Trade state
+        else if (aGamePanel.getGameState() == aGamePanel.getTradeState()) {
+            tradeState(vKeyCode);
+        }
     }
 
     @Override
@@ -165,26 +169,8 @@ public class Input implements KeyListener {
         }
 
         // move into character state
-        if (pCode == KeyEvent.VK_UP) {
-            if (aGamePanel.getUserInterface().getSlotRow() != 0) {
-                aGamePanel.getUserInterface().setSlotRow(aGamePanel.getUserInterface().getSlotRow() - 1);
-            }
-        }
-        if (pCode == KeyEvent.VK_DOWN) {
-            if (aGamePanel.getUserInterface().getSlotRow() != 3) {
-                aGamePanel.getUserInterface().setSlotRow(aGamePanel.getUserInterface().getSlotRow() + 1);
-            }
-        }
-        if (pCode == KeyEvent.VK_RIGHT) {
-            if (aGamePanel.getUserInterface().getSlotCol() != 4) {
-                aGamePanel.getUserInterface().setSlotCol(aGamePanel.getUserInterface().getSlotCol() + 1);
-            }
-        }
-        if (pCode == KeyEvent.VK_LEFT) {
-            if (aGamePanel.getUserInterface().getSlotCol() != 0) {
-                aGamePanel.getUserInterface().setSlotCol(aGamePanel.getUserInterface().getSlotCol() - 1);
-            }
-        }
+        playerInventory(pCode);
+
         // select
         if (pCode == KeyEvent.VK_ENTER) {
             aGamePanel.getPlayer().selectItem();
@@ -251,10 +237,10 @@ public class Input implements KeyListener {
 
     private void gameOverState(int pCode) {
         if (pCode == KeyEvent.VK_ENTER) {
-            if(aGamePanel.getUserInterface().getCommandNumber() == 0) {
+            if (aGamePanel.getUserInterface().getCommandNumber() == 0) {
                 aGamePanel.resetGame();
                 aGamePanel.setGameState(aGamePanel.getPlayState());
-            }else{
+            } else {
                 aGamePanel.setGameState(aGamePanel.getTitleState());
                 aGamePanel.stopMusic();
                 aGamePanel.resetGame();
@@ -271,6 +257,87 @@ public class Input implements KeyListener {
             aGamePanel.getUserInterface().setCommandNumber(aGamePanel.getUserInterface().getCommandNumber() + 1);
             if (aGamePanel.getUserInterface().getCommandNumber() > 1) {
                 aGamePanel.getUserInterface().setCommandNumber(0);
+            }
+        }
+    }
+
+    private void tradeState(int pCode) {
+        if (pCode == KeyEvent.VK_ENTER) {
+            aEnter = true;
+        }
+        if (aGamePanel.getUserInterface().getSubState() == 0) {
+            if (pCode == KeyEvent.VK_UP) {
+                aGamePanel.getUserInterface().setCommandNumber(aGamePanel.getUserInterface().getCommandNumber() - 1);
+                if (aGamePanel.getUserInterface().getCommandNumber() < 0) {
+                    aGamePanel.getUserInterface().setCommandNumber(2);
+                }
+            }
+            if (pCode == KeyEvent.VK_DOWN) {
+                aGamePanel.getUserInterface().setCommandNumber(aGamePanel.getUserInterface().getCommandNumber() + 1);
+                if (aGamePanel.getUserInterface().getCommandNumber() > 2) {
+                    aGamePanel.getUserInterface().setCommandNumber(0);
+                }
+            }
+        }
+        if(aGamePanel.getUserInterface().getSubState() == 1){
+            //Move in npc inventory
+            npcInventory(pCode);
+            //escape input
+            if(pCode == KeyEvent.VK_ESCAPE){
+                aGamePanel.getUserInterface().setSubState(0);
+            }
+        }if(aGamePanel.getUserInterface().getSubState() == 2){
+            //Move in npc inventory
+            playerInventory(pCode);
+            //escape input
+            if(pCode == KeyEvent.VK_ESCAPE){
+                aGamePanel.getUserInterface().setSubState(0);
+            }
+        }
+    }
+
+    private void playerInventory(int pCode) {
+        if (pCode == KeyEvent.VK_UP) {
+            if (aGamePanel.getUserInterface().getSlotRow() != 0) {
+                aGamePanel.getUserInterface().setSlotRow(aGamePanel.getUserInterface().getSlotRow() - 1);
+            }
+        }
+        if (pCode == KeyEvent.VK_DOWN) {
+            if (aGamePanel.getUserInterface().getSlotRow() != 3) {
+                aGamePanel.getUserInterface().setSlotRow(aGamePanel.getUserInterface().getSlotRow() + 1);
+            }
+        }
+        if (pCode == KeyEvent.VK_RIGHT) {
+            if (aGamePanel.getUserInterface().getSlotCol() != 4) {
+                aGamePanel.getUserInterface().setSlotCol(aGamePanel.getUserInterface().getSlotCol() + 1);
+            }
+        }
+        if (pCode == KeyEvent.VK_LEFT) {
+            if (aGamePanel.getUserInterface().getSlotCol() != 0) {
+                aGamePanel.getUserInterface().setSlotCol(aGamePanel.getUserInterface().getSlotCol() - 1);
+            }
+        }
+    }
+
+    private void npcInventory(int pCode) {
+        if (pCode == KeyEvent.VK_UP) {
+            if (aGamePanel.getUserInterface().getNPCSlotRow() != 0) {
+                aGamePanel.getUserInterface().setNPCSlotRow(aGamePanel.getUserInterface().getNPCSlotRow() - 1);
+            }
+        }
+        if (pCode == KeyEvent.VK_DOWN) {
+            if (aGamePanel.getUserInterface().getNPCSlotRow() != 3) {
+                aGamePanel.getUserInterface().setNPCSlotRow(aGamePanel.getUserInterface().getNPCSlotRow() + 1);
+            }
+        }
+        if (pCode == KeyEvent.VK_RIGHT) {
+            if (aGamePanel.getUserInterface().getNPCSlotCol() != 4) {
+                aGamePanel.getUserInterface().setNPCSlotCol(aGamePanel.getUserInterface().getNPCSlotCol() + 1);
+            }
+        }
+        if (pCode == KeyEvent.VK_LEFT) {
+            if (aGamePanel.getUserInterface().getNPCSlotCol() != 0) {
+                aGamePanel.getUserInterface().setNPCSlotCol(aGamePanel.getUserInterface().getNPCSlotCol() - 1);
             }
         }
     }

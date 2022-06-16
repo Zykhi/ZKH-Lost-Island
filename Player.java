@@ -2,7 +2,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.awt.AlphaComposite;
 
 import javax.imageio.ImageIO;
@@ -12,8 +11,6 @@ public class Player extends Entity {
     private final int aScreenX;
     private final int aScreenY;
     private boolean aAttackCancel = false;
-    private ArrayList<Entity> aInventory = new ArrayList<Entity>();
-    public final int aMaxInventorySize = 20;
     private Input aInput;
 
     public Player(GamePanel pGamePanel, Input pInput) {
@@ -40,13 +37,13 @@ public class Player extends Entity {
         setItems();
     }
 
-    public void setDefaultPosition(){
+    public void setDefaultPosition() {
         this.setWorldX(getGamePanel().getTileSize() * 20);
         this.setWorldY(getGamePanel().getTileSize() * 7);
         this.setDirection("down");
     }
 
-    public void restoreLifeAndAmmo(){
+    public void restoreLifeAndAmmo() {
         setLife(getMaxLife());
         setAmmo(getMaxAmmo());
         setInvincible(false);
@@ -75,11 +72,11 @@ public class Player extends Entity {
     }
 
     public void setItems() {
-        //reset inventory before starting game
-        aInventory.clear();
-        //add starting items to inventory
-        aInventory.add(getCurrentWeapon());
-        aInventory.add(getCurrentShield());
+        // reset inventory before starting game
+        getInventory().clear();
+        // add starting items to inventory
+        getInventory().add(getCurrentWeapon());
+        getInventory().add(getCurrentShield());
     }
 
     private int getPlayerAttack() {
@@ -178,8 +175,8 @@ public class Player extends Entity {
                 // Inventory items
                 String vText;
 
-                if (aInventory.size() != aMaxInventorySize) {
-                    aInventory.add(getGamePanel().getItem(pIndex));
+                if (getInventory().size() != getMaxInventorySize()) {
+                    getInventory().add(getGamePanel().getItem(pIndex));
                     vText = "You picked up " + getGamePanel().getItem(pIndex).getName();
                 } else {
                     vText = "Your inventory is full";
@@ -276,10 +273,11 @@ public class Player extends Entity {
     }
 
     public void selectItem() {
-        int vItemIndex = getGamePanel().getUserInterface().getItemIndexOnSlot();
+        int vItemIndex = getGamePanel().getUserInterface().getItemIndexOnSlot(
+                getGamePanel().getUserInterface().getSlotCol(), getGamePanel().getUserInterface().getSlotRow());
 
-        if (vItemIndex < aInventory.size()) {
-            Entity vSelectedItem = aInventory.get(vItemIndex);
+        if (vItemIndex < getInventory().size()) {
+            Entity vSelectedItem = getInventory().get(vItemIndex);
 
             if (vSelectedItem.getType() == getSwordType() || vSelectedItem.getType() == getAxeType()
                     || vSelectedItem.getType() == getBowType() || vSelectedItem.getType() == getPickaxeType()) {
@@ -293,7 +291,7 @@ public class Player extends Entity {
             }
             if (vSelectedItem.getType() == getConsumableType()) {
                 vSelectedItem.use(this);
-                aInventory.remove(vItemIndex);
+                getInventory().remove(vItemIndex);
             }
         }
     }
@@ -476,6 +474,7 @@ public class Player extends Entity {
 
         if (getLife() <= 0) {
             getGamePanel().setGameState(getGamePanel().getGameOverState());
+            getGamePanel().getUserInterface().setCommandNumber(-1);
         }
 
     }
@@ -627,14 +626,6 @@ public class Player extends Entity {
 
     public boolean isAttackCancel() {
         return aAttackCancel;
-    }
-
-    public ArrayList<Entity> getInventory() {
-        return aInventory;
-    }
-
-    public void setInventory(ArrayList<Entity> aInventory) {
-        this.aInventory = aInventory;
     }
 
     public void setAttackCancel(boolean pAttackCancel) {

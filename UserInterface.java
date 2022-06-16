@@ -17,6 +17,7 @@ public class UserInterface {
     private BufferedImage aHeartHalf;
     private BufferedImage aAmmoFull;
     private BufferedImage aAmmoBlank;
+    private Entity aNPC;
 
     private ArrayList<String> aMessage = new ArrayList<>();
     private ArrayList<Integer> aMessageCounter = new ArrayList<>();
@@ -25,6 +26,9 @@ public class UserInterface {
 
     private int aSlotRow = 0;
     private int aSlotCol = 0;
+
+    private int aNPCSlotRow = 0;
+    private int aNPCSlotCol = 0;
 
     private int aSubState = 0;
 
@@ -86,7 +90,7 @@ public class UserInterface {
             drawPlayerLife();
             drawAmmo();
             drawCharacterScreen();
-            drawInventory();
+            drawInventory(aGamePanel.getPlayer(), true);
         }
         // Option State
         if (aGamePanel.getGameState() == aGamePanel.getOptionState()) {
@@ -98,6 +102,13 @@ public class UserInterface {
         // Game Over State
         if (aGamePanel.getGameState() == aGamePanel.getGameOverState()) {
             drawGameOverScreen();
+        }
+
+        // Trade State
+        if (aGamePanel.getGameState() == aGamePanel.getTradeState()) {
+            drawPlayerLife();
+            drawAmmo();
+            drawTradeScreen();
         }
 
     }
@@ -371,13 +382,31 @@ public class UserInterface {
 
     }
 
-    private void drawInventory() {
+    private void drawInventory(Entity pEntity, boolean pCursor) {
 
-        // frame
-        int vFrameX = aGamePanel.getTileSize() * 9;
-        int vFrameY = aGamePanel.getTileSize() * 2;
-        int vFrameWidth = aGamePanel.getTileSize() * 6;
-        int vFrameHeight = aGamePanel.getTileSize() * 5;
+        int vFrameX;
+        int vFrameY;
+        int vFrameWidth;
+        int vFrameHeight;
+        int vSlotCol;
+        int vSlotRow;
+
+        if (pEntity == aGamePanel.getPlayer()) {
+            // frame
+            vFrameX = aGamePanel.getTileSize() * 9;
+            vFrameY = aGamePanel.getTileSize() * 2;
+            vFrameWidth = aGamePanel.getTileSize() * 6;
+            vFrameHeight = aGamePanel.getTileSize() * 5;
+            vSlotCol = aSlotCol;
+            vSlotRow = aSlotRow;
+        } else {
+            vFrameX = aGamePanel.getTileSize();
+            vFrameY = aGamePanel.getTileSize() * 2;
+            vFrameWidth = aGamePanel.getTileSize() * 6;
+            vFrameHeight = aGamePanel.getTileSize() * 5;
+            vSlotCol = aNPCSlotCol;
+            vSlotRow = aNPCSlotRow;
+        }
 
         drawSubWindow(vFrameX, vFrameY, vFrameWidth, vFrameHeight);
 
@@ -389,16 +418,16 @@ public class UserInterface {
         int vSlotSize = aGamePanel.getTileSize() + 3;
 
         // Draw Items
-        for (int i = 0; i < aGamePanel.getPlayer().getInventory().size(); i++) {
+        for (int i = 0; i < pEntity.getInventory().size(); i++) {
 
             // Equip
-            if (aGamePanel.getPlayer().getInventory().get(i) == aGamePanel.getPlayer().getCurrentWeapon()
-                    || aGamePanel.getPlayer().getInventory().get(i) == aGamePanel.getPlayer().getCurrentShield()) {
+            if (pEntity.getInventory().get(i) == pEntity.getCurrentWeapon()
+                    || pEntity.getInventory().get(i) == pEntity.getCurrentShield()) {
                 aGraphics2D.setColor(Color.yellow);
                 aGraphics2D.fillRoundRect(vSlotX, vSlotY, aGamePanel.getTileSize(), aGamePanel.getTileSize(), 10, 10);
             }
 
-            aGraphics2D.drawImage(((Entity) aGamePanel.getPlayer().getInventory().get(i)).getImage(), vSlotX, vSlotY,
+            aGraphics2D.drawImage(pEntity.getInventory().get(i).getImage(), vSlotX, vSlotY,
                     null);
             vSlotX += vSlotSize;
             if (i == 4 || i == 9 || i == 14) {
@@ -408,38 +437,40 @@ public class UserInterface {
         }
 
         // Cursor
-        int vCursorX = vSlotXStart + (vSlotSize * aSlotCol);
-        int vCursorY = vSlotYStart + (vSlotSize * aSlotRow);
-        int vCursorWidth = aGamePanel.getTileSize();
-        int vCursorHeight = aGamePanel.getTileSize();
+        if (pCursor == true) {
+            int vCursorX = vSlotXStart + (vSlotSize * vSlotCol);
+            int vCursorY = vSlotYStart + (vSlotSize * vSlotRow);
+            int vCursorWidth = aGamePanel.getTileSize();
+            int vCursorHeight = aGamePanel.getTileSize();
 
-        // draw cursor
-        aGraphics2D.setColor(Color.white);
-        aGraphics2D.setStroke(new BasicStroke(3));
-        aGraphics2D.drawRoundRect(vCursorX, vCursorY, vCursorWidth, vCursorHeight, 10, 10);
+            // draw cursor
+            aGraphics2D.setColor(Color.white);
+            aGraphics2D.setStroke(new BasicStroke(3));
+            aGraphics2D.drawRoundRect(vCursorX, vCursorY, vCursorWidth, vCursorHeight, 10, 10);
 
-        // description frame
-        int vDescriptionFrameX = vFrameX;
-        int vDescriptionFrameY = vFrameY + vFrameHeight + aGamePanel.getTileSize();
-        int vDescriptionFrameWidth = vFrameWidth;
-        int vDescriptionFrameHeight = aGamePanel.getTileSize() * 3;
+            // description frame
+            int vDescriptionFrameX = vFrameX;
+            int vDescriptionFrameY = vFrameY + vFrameHeight + aGamePanel.getTileSize();
+            int vDescriptionFrameWidth = vFrameWidth;
+            int vDescriptionFrameHeight = aGamePanel.getTileSize() * 3;
 
-        // draw description
-        int vTextX = vDescriptionFrameX + 20;
-        int vTextY = vDescriptionFrameY + aGamePanel.getTileSize();
+            // draw description
+            int vTextX = vDescriptionFrameX + 20;
+            int vTextY = vDescriptionFrameY + aGamePanel.getTileSize();
 
-        aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(28f));
+            aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(28f));
 
-        int vItemIndex = getItemIndexOnSlot();
+            int vItemIndex = getItemIndexOnSlot(vSlotCol, vSlotRow);
 
-        if (vItemIndex < aGamePanel.getPlayer().getInventory().size()) {
+            if (vItemIndex < pEntity.getInventory().size()) {
 
-            // draw subwindow only if there is an item on the slot
-            drawSubWindow(vDescriptionFrameX, vDescriptionFrameY, vDescriptionFrameWidth, vDescriptionFrameHeight);
+                // draw subwindow only if there is an item on the slot
+                drawSubWindow(vDescriptionFrameX, vDescriptionFrameY, vDescriptionFrameWidth, vDescriptionFrameHeight);
 
-            for (String vLine : (aGamePanel.getPlayer()).getInventory().get(vItemIndex).getDescription().split("\n")) {
-                aGraphics2D.drawString(vLine, vTextX, vTextY);
-                vTextY += 32;
+                for (String vLine : pEntity.getInventory().get(vItemIndex).getDescription().split("\n")) {
+                    aGraphics2D.drawString(vLine, vTextX, vTextY);
+                    vTextY += 32;
+                }
             }
         }
 
@@ -529,7 +560,6 @@ public class UserInterface {
             if (aGamePanel.getInput().isEnter() == true) {
                 aGamePanel.getInput().setEnter(false);
                 aGamePanel.setGameState(aGamePanel.getPlayState());
-                aCommandNumber = 0;
             }
         }
 
@@ -643,7 +673,7 @@ public class UserInterface {
         }
     }
 
-    private void drawGameOverScreen(){
+    private void drawGameOverScreen() {
         aGraphics2D.setColor(new Color(0, 0, 0, 128));
         aGraphics2D.fillRect(0, 0, aGamePanel.getWidth(), aGamePanel.getHeight());
 
@@ -652,35 +682,196 @@ public class UserInterface {
         String vText;
         aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(Font.BOLD, 110f));
 
-        //Shadow
+        // Shadow
         vText = "Game Over";
         aGraphics2D.setColor(Color.BLACK);
         vX = getXforCenterText(vText);
         vY = aGamePanel.getTileSize() * 4;
         aGraphics2D.drawString(vText, vX, vY);
-        //GameOver Text
+        // GameOver Text
         aGraphics2D.setColor(Color.WHITE);
         aGraphics2D.drawString(vText, vX - 4, vY - 4);
 
-        //ReTry
+        // ReTry
         aGraphics2D.setFont(aGraphics2D.getFont().deriveFont(50f));
         vText = "Retry";
         vX = getXforCenterText(vText);
         vY += aGamePanel.getTileSize() * 4;
         aGraphics2D.drawString(vText, vX, vY);
-        if(aCommandNumber == 0){
+        if (aCommandNumber == 0) {
             aGraphics2D.drawString(">", vX - 40, vY);
-            
+
         }
 
-        //Back to title screen
+        // Back to title screen
         vText = "Quit";
         vX = getXforCenterText(vText);
         vY += 55;
         aGraphics2D.drawString(vText, vX, vY);
-        if(aCommandNumber == 1){
+        if (aCommandNumber == 1) {
             aGraphics2D.drawString(">", vX - 40, vY);
+
+        }
+    }
+
+    private void drawTradeScreen() {
+        switch (aSubState) {
+            case 0:
+                tradeSelect();
+                break;
+            case 1:
+                tradeBuy();
+                break;
+            case 2:
+                tradeSell();
+                break;
+        }
+        aGamePanel.getInput().setEnter(false);
+    }
+
+    private void tradeSelect() {
+        drawDialogueScreen();
+
+        // draw window
+        int vX = aGamePanel.getTileSize() * 12;
+        int vY = (int) (aGamePanel.getTileSize() * 6.5);
+        int vWidth = aGamePanel.getTileSize() * 2;
+        int vHeight = (int) (aGamePanel.getTileSize() * 2.5);
+        drawSubWindow(vX, vY, vWidth, vHeight);
+
+        // draw text
+        vX += aGamePanel.getTileSize() - 16;
+        vY += aGamePanel.getTileSize() - 16;
+        aGraphics2D.drawString("Buy", vX, vY);
+        if (aCommandNumber == 0) {
+            aGraphics2D.drawString(">", vX - 16, vY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 1;
+            }
+        }
+        vY += aGamePanel.getTileSize() - 16;
+        aGraphics2D.drawString("Sell", vX, vY);
+        if (aCommandNumber == 1) {
+            aGraphics2D.drawString(">", vX - 16, vY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aSubState = 2;
+            }
+        }
+        vY += aGamePanel.getTileSize() - 16;
+        aGraphics2D.drawString("Leave", vX, vY);
+        if (aCommandNumber == 2) {
+            aGraphics2D.drawString(">", vX - 16, vY);
+            if (aGamePanel.getInput().isEnter() == true) {
+                aGamePanel.getInput().setEnter(false);
+                aCommandNumber = 0;
+                aGamePanel.setGameState(aGamePanel.getDialogueState());
+                aCurrentDialogue = "See you later!";
+            }
+        }
+    }
+
+    private void tradeBuy() {
+        // draw player inventory
+        drawInventory(aGamePanel.getPlayer(), false);
+        // draw shop inventory
+        drawInventory(aNPC, true);
+        
+        int vX;
+        int vY;
+        int vWidth;
+        int vHeight;
+
+        // draw coin player window
+        vX = aGamePanel.getTileSize() * 9;
+        vY = aGamePanel.getTileSize() * 9;
+        vWidth = aGamePanel.getTileSize() * 6;
+        vHeight = aGamePanel.getTileSize() * 2;
+        drawSubWindow(vX, vY, vWidth, vHeight);
+
+        // draw price window
+        int vItemIndex = getItemIndexOnSlot(aNPCSlotCol, aNPCSlotRow);
+        if(vItemIndex<aNPC.getInventory().size()){
+            vX = (int) (aGamePanel.getTileSize() * 5.5);
+            vY = (int) (aGamePanel.getTileSize() * 6.5);
+            vWidth = (int) (aGamePanel.getTileSize() * 2);
+            vHeight = aGamePanel.getTileSize();
+            drawSubWindow(vX, vY, vWidth, vHeight);
+            //TODO : display coin image
             
+
+            int vPrice = aNPC.getInventory().get(vItemIndex).getPrice();
+            String vPriceText = "" + vPrice;
+            vX = getXforAllignToRightText(vPriceText, (int) (aGamePanel.getTileSize() * 7.5 - 20));
+            aGraphics2D.drawString(vPriceText, vX, vY +34);
+
+            //Buy
+            if(aGamePanel.getInput().isEnter() == true){
+                if(aNPC.getInventory().get(vItemIndex).getPrice() > aGamePanel.getPlayer().getMoney()){
+                    aSubState = 0;
+                    aGamePanel.setGameState(aGamePanel.getDialogueState());
+                    aCurrentDialogue = "You don't have enough money!";
+                    drawDialogueScreen();
+                }else if(aGamePanel.getPlayer().getInventory().size() == aGamePanel.getPlayer().getMaxInventorySize()){
+                    aSubState = 0;
+                    aGamePanel.setGameState(aGamePanel.getDialogueState());
+                    aCurrentDialogue = "You can't carry more items!";
+                    drawDialogueScreen();
+                }else {
+                    aGamePanel.getPlayer().setMoney(aGamePanel.getPlayer().getMoney() - vPrice);
+                    aGamePanel.getPlayer().getInventory().add(aNPC.getInventory().get(vItemIndex));
+                }
+            }
+        }
+
+    }
+
+    private void tradeSell() {
+        //draw player inventory
+        drawInventory(aGamePanel.getPlayer(), true);
+
+        int vX;
+        int vY;
+        int vWidth;
+        int vHeight;
+
+        // draw coin player window
+        /* 
+        vX = aGamePanel.getTileSize() * 9;
+        vY = aGamePanel.getTileSize() * 9;
+        vWidth = aGamePanel.getTileSize() * 6;
+        vHeight = aGamePanel.getTileSize() * 2;
+        drawSubWindow(vX, vY, vWidth, vHeight);
+        */
+        // draw price window
+        int vItemIndex = getItemIndexOnSlot(aSlotCol, aSlotRow);
+        if(vItemIndex<aGamePanel.getPlayer().getInventory().size()){
+            vX = (int) (aGamePanel.getTileSize() * 8.5);
+            vY = (int) (aGamePanel.getTileSize() * 6.5);
+            vWidth = (int) (aGamePanel.getTileSize() * 2);
+            vHeight = aGamePanel.getTileSize();
+            drawSubWindow(vX, vY, vWidth, vHeight);
+            //TODO : display coin image
+            
+            float vSellReduction = 0.7f;
+            int vPrice = (int) (aGamePanel.getPlayer().getInventory().get(vItemIndex).getPrice() * vSellReduction);
+            String vPriceText = "" + vPrice;
+            vX = getXforAllignToRightText(vPriceText, (int) (aGamePanel.getTileSize() * 10.5 - 20));
+            aGraphics2D.drawString(vPriceText, vX, vY +34);
+
+            //sell
+            if(aGamePanel.getInput().isEnter() == true){
+                if(aGamePanel.getPlayer().getInventory().get(vItemIndex) == aGamePanel.getPlayer().getCurrentWeapon() || aGamePanel.getPlayer().getInventory().get(vItemIndex) == aGamePanel.getPlayer().getCurrentShield()){
+                    aCommandNumber = 0;
+                    aSubState = 0;
+                    aGamePanel.setGameState(aGamePanel.getDialogueState());
+                    aCurrentDialogue = "You can't sell an equipped item!";
+                }else{
+                    aGamePanel.getPlayer().setMoney(aGamePanel.getPlayer().getMoney() + vPrice);
+                    aGamePanel.getPlayer().getInventory().remove(vItemIndex);
+                }
+            }
         }
     }
 
@@ -705,8 +896,8 @@ public class UserInterface {
         return vX;
     }
 
-    public int getItemIndexOnSlot() {
-        int vItemIndex = aSlotRow * 5 + aSlotCol;
+    public int getItemIndexOnSlot(int pSlotCol, int pSlotRow) {
+        int vItemIndex = pSlotCol + (pSlotRow * 5);
         return vItemIndex;
     }
 
@@ -726,8 +917,28 @@ public class UserInterface {
         return aSubState;
     }
 
+    public int getNPCSlotCol() {
+        return aNPCSlotCol;
+    }
+
+    public int getNPCSlotRow() {
+        return aNPCSlotRow;
+    }
+
+    public Entity getNPC() {
+        return aNPC;
+    }
+
+    public void setNPC(Entity pNPC) {
+        aNPC = pNPC;
+    }
+
     public void setCommandNumber(int pCommandNumber) {
         this.aCommandNumber = pCommandNumber;
+    }
+
+    public void setSubState(int pSubState) {
+        this.aSubState = pSubState;
     }
 
     public void setCurrentDialogue(String pCurrentDialogue) {
@@ -740,5 +951,13 @@ public class UserInterface {
 
     public void setSlotRow(int pSlotRow) {
         this.aSlotRow = pSlotRow;
+    }
+
+    public void setNPCSlotCol(int pNPCSlotCol) {
+        this.aNPCSlotCol = pNPCSlotCol;
+    }
+
+    public void setNPCSlotRow(int pNPCSlotRow) {
+        this.aNPCSlotRow = pNPCSlotRow;
     }
 }
