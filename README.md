@@ -98,7 +98,7 @@ _how to install the game_
         - [ ] Add all stat
         - [ ] Add sound effect
 - [ ] Create the game map
-- [ ] Add trade system
+- [x] Add trade system
 - [ ] Add item level up system
 - [x] Add destructible tile
 - [x] Add pause menu
