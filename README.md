@@ -1,7 +1,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Zykhi/ZKH-Lost-Island">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="readmeimg/icon.png" alt="Logo" width="256" height="256">
   </a>
 
   <h3 align="center">ZKH Lost Island README</h3>
@@ -118,4 +118,4 @@ email : charly.diouy@edu.esiee.fr
 
 Project Link : [https://github.com/Zykhi/ZKH-Lost-Island](https://github.com/Zykhi/ZKH-Lost-Island)
 
-[zkh-screenshot]: images/screenshot.png
+[zkh-screenshot]: readmeimg/screen.png
